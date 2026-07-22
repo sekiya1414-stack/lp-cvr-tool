@@ -1,0 +1,31 @@
+<!--
+  [テンプレート] hero セクション サンプル
+
+  役割: ファーストビュー(スクロール前に見える範囲)全体。
+  CRO知見:
+    - 長いLPほど最初の1画面での離脱率が高いため、価値提案(誰の・どんな課題を・
+      どう解決するか)はこのセクションだけで完結して伝わるようにする。
+    - 見出し(HERO_HEADLINE)は「機能」ではなく「得られる結果/ベネフィット」を
+      主語にすると刺さりやすい。
+    - CTAボタンの文言は行動後の利益を明示する(例:「無料で始める」)。
+      「送信する」「詳しくはこちら」のような行為そのものを説明する文言は避ける。
+
+  プレースホルダー:
+    {{HERO_HEADLINE}}    見出し(ベネフィット訴求)
+    {{HERO_SUBCOPY}}     補足コピー(対象・課題・解決策を1〜2文で)
+    {{HERO_CTA_TEXT}}    CTAボタン文言
+    {{HERO_IMAGE_SRC}}   ヒーロー画像パス(現状はプレースホルダー画像 / Unsplash URL)
+    {{HERO_IMAGE_ALT}}   画像の代替テキスト
+-->
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-headline">{{HERO_HEADLINE}}</h1>
+    <p class="hero-subcopy">{{HERO_SUBCOPY}}</p>
+    <a class="btn btn-primary" href="#cta">{{HERO_CTA_TEXT}}</a>
+  </div>
+  <div class="hero-media">
+    <!-- フェーズ1〜フェーズ2着手前は placeholder.jpg または Unsplash 画像URLを参照。
+         Canvaで作成した画像に後から差し替える想定(詳細: prompts/future-phase2-image-generation.md) -->
+    <img src="{{HERO_IMAGE_SRC}}" alt="{{HERO_IMAGE_ALT}}" loading="lazy">
+  </div>
+</section>

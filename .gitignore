@@ -1,0 +1,18 @@
+# 環境変数・秘匿情報
+.env
+.env.*
+!.env.example
+
+# 依存関係(フェーズ2以降でnpmパッケージを導入した場合用)
+node_modules/
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# ビルド出力
+dist/
+
+# エディタ設定
+.vscode/
+.idea/

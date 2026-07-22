@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lp-cvr-tool | 生成LP一覧</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  .lead { color: var(--muted); margin-bottom: 40px; }
+  h2 { font-size: 1.1rem; border-left: 4px solid var(--accent); padding-left: 10px; margin-top: 40px; }
+  ul { list-style: none; padding: 0; display: grid; gap: 12px; }
+  li a {
+    display: block;
+    background: var(--card);
+    border-radius: 10px;
+    padding: 16px 18px;
+    color: var(--text);
+    text-decoration: none;
+    border: 1px solid #334155;
+    transition: border-color 0.15s ease;
+  }
+  li a:hover { border-color: var(--accent); }
+  .variant-label { color: var(--accent); font-size: 0.85rem; display: block; margin-bottom: 2px; }
+  footer { margin-top: 60px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>lp-cvr-tool</h1>
+  <p class="lead">CVR最適化特化のLP自動生成システム。生成済みLPの一覧です。</p>
+
+  <h2>project-a</h2>
+  <ul>
+    <li>
+      <a href="./lp/project-a/variant-1/index.html">
+        <span class="variant-label">variant-1 / 価格訴求</span>
+        コスパ・料金の分かりやすさを前面に出したLP
+      </a>
+    </li>
+    <li>
+      <a href="./lp/project-a/variant-2/index.html">
+        <span class="variant-label">variant-2 / 権威訴求</span>
+        導入実績・受賞歴などの信頼性を前面に出したLP
+      </a>
+    </li>
+    <li>
+      <a href="./lp/project-a/variant-3/index.html">
+        <span class="variant-label">variant-3 / 感情訴求</span>
+        課題への共感・理想像を前面に出したLP
+      </a>
+    </li>
+  </ul>
+
+  <footer>
+    新しいプロジェクトが追加されたら、このページにリンクを追記してください。
+  </footer>
+</main>
+</body>
+</html>

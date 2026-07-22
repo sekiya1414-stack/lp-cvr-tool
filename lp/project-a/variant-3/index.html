@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow | もう、タスクの抜け漏れに悩まない毎日へ</title>
+<meta name="description" content="チームの「あれ、誰がやるんだっけ」をなくすTaskFlow">
+<style>
+  :root { color-scheme: light; --accent: #2563eb; --text: #0f172a; --muted: #64748b; --border: #e2e8f0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hiragino Sans", "Yu Gothic", sans-serif; color: var(--text); line-height: 1.7; }
+  section { padding: 64px 24px; max-width: 960px; margin: 0 auto; }
+  .btn { display: inline-block; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+
+  .hero { display: flex; flex-wrap: wrap; align-items: center; gap: 40px; }
+  .hero-inner { flex: 1 1 360px; }
+  .hero-headline { font-size: 2.2rem; margin: 0 0 16px; }
+  .hero-subcopy { color: var(--muted); font-size: 1.05rem; margin-bottom: 28px; }
+  .hero-media { flex: 1 1 320px; }
+  .hero-media img { width: 100%; border-radius: 12px; }
+
+  .social-proof { text-align: center; border-top: 1px solid var(--border); }
+  .social-proof-stat { font-size: 1.1rem; margin-bottom: 24px; }
+  .social-proof-stat strong { font-size: 1.8rem; color: var(--accent); margin-right: 6px; }
+  .logo-row { list-style: none; display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; padding: 0; margin: 0 0 40px; color: var(--muted); font-weight: bold; }
+  .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; text-align: left; }
+  .testimonial { background: #f8fafc; border-radius: 10px; padding: 20px; margin: 0; }
+  .testimonial footer { margin-top: 12px; color: var(--muted); font-size: 0.9rem; }
+
+  .pricing { border-top: 1px solid var(--border); }
+  .section-title { text-align: center; font-size: 1.6rem; margin-bottom: 32px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .pricing-card { border: 1px solid var(--border); border-radius: 12px; padding: 28px; text-align: center; }
+  .pricing-card-highlight { border-color: var(--accent); border-width: 2px; position: relative; }
+  .badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 4px 14px; border-radius: 999px; font-size: 0.8rem; margin: 0; }
+  .price { font-size: 1.6rem; font-weight: bold; margin: 8px 0; }
+  .desc { color: var(--muted); margin-bottom: 16px; }
+  .features { list-style: none; padding: 0; margin: 0 0 24px; text-align: left; color: var(--muted); }
+  .features li::before { content: "✓ "; color: var(--accent); font-weight: bold; }
+
+  .cta { text-align: center; border-top: 1px solid var(--border); }
+  .cta-headline { font-size: 1.8rem; margin-bottom: 12px; }
+  .cta-subcopy { color: var(--muted); margin-bottom: 28px; }
+  .cta-form { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .cta-form input { padding: 14px; border-radius: 8px; border: 1px solid var(--border); min-width: 260px; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<!--
+  [テンプレート] hero セクション サンプル
+
+  役割: ファーストビュー(スクロール前に見える範囲)全体。
+  CRO知見:
+    - 長いLPほど最初の1画面での離脱率が高いため、価値提案(誰の・どんな課題を・
+      どう解決するか)はこのセクションだけで完結して伝わるようにする。
+    - 見出し(HERO_HEADLINE)は「機能」ではなく「得られる結果/ベネフィット」を
+      主語にすると刺さりやすい。
+    - CTAボタンの文言は行動後の利益を明示する(例:「無料で始める」)。
+      「送信する」「詳しくはこちら」のような行為そのものを説明する文言は避ける。
+
+  プレースホルダー:
+    「あれ、誰がやるんだっけ」をなくす。    見出し(ベネフィット訴求)
+    抜け漏れの不安、確認のための残業、そんな毎日をTaskFlowが変えます。     補足コピー(対象・課題・解決策を1〜2文で)
+    毎日を軽くする    CTAボタン文言
+    https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80   ヒーロー画像パス(現状はプレースホルダー画像 / Unsplash URL)
+    安心した表情でチームで働くイメージ(プレースホルダー)   画像の代替テキスト
+-->
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-headline">「あれ、誰がやるんだっけ」をなくす。</h1>
+    <p class="hero-subcopy">抜け漏れの不安、確認のための残業、そんな毎日をTaskFlowが変えます。</p>
+    <a class="btn btn-primary" href="#cta">毎日を軽くする</a>
+  </div>
+  <div class="hero-media">
+    <!-- フェーズ1〜フェーズ2着手前は placeholder.jpg または Unsplash 画像URLを参照。
+         Canvaで作成した画像に後から差し替える想定(詳細: prompts/future-phase2-image-generation.md) -->
+    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="安心した表情でチームで働くイメージ(プレースホルダー)" loading="lazy">
+  </div>
+</section>
+
+<!--
+  [テンプレート] social-proof(社会的証明)セクション サンプル
+
+  役割: hero の直後に配置し、初見の訪問者に「他の人/企業も使っている」という
+        安心材料を与えて信頼性を補強する。
+  CRO知見:
+    - ファーストビュー付近に利用者数・導入企業ロゴなどの社会的証明を配置すると
+      信頼性が向上する(離脱前に安心材料を提示できるため)。
+    - 数字は具体的であるほど信頼されやすい(例:「1,000社」「導入企業500社」)。
+    - testimonial(お客様の声)は「誰が(名前・役職・会社)」を明示することで
+      信憑性が上がる。
+
+  プレースホルダー:
+    1,000社+ / のチームが、同じ悩みから解放されました  利用実績の数字と説明
+    Sample Corp 〜 Blue Field                            導入企業名(ロゴ画像の代わりにテキスト表示)
+    {{TESTIMONIAL_n_TEXT}} / {{TESTIMONIAL_n_NAME}} / {{TESTIMONIAL_n_ROLE}}  (n=1〜3)
+-->
+<section class="social-proof">
+  <p class="social-proof-stat">
+    <strong>1,000社+</strong> のチームが、同じ悩みから解放されました
+  </p>
+
+  <ul class="logo-row">
+    <li>Sample Corp</li>
+    <li>Acme Inc.</li>
+    <li>Nova Works</li>
+    <li>Blue Field</li>
+  </ul>
+
+  <div class="testimonials">
+    <blockquote class="testimonial">
+      <p>確認のためだけの残業がなくなり、定時で帰れる日が増えました。</p>
+      <footer>中村 隆 / 営業チームリーダー</footer>
+    </blockquote>
+    <blockquote class="testimonial">
+      <p>「言った言わない」がなくなって、チームの雰囲気まで良くなりました。</p>
+      <footer>小林 彩 / バックオフィス担当</footer>
+    </blockquote>
+    <blockquote class="testimonial">
+      <p>抜け漏れへの不安が減って、安心して仕事に集中できています。</p>
+      <footer>渡辺 学 / 新任マネージャー</footer>
+    </blockquote>
+  </div>
+</section>
+
+<!--
+  [テンプレート] pricing セクション サンプル
+
+  役割: 料金プランの提示。訴求軸が「価格訴求」のバリアントではこのセクションの
+        比重を上げ、hero側でも価格の安さに触れるなど連動させる。
+  CRO知見:
+    - プランは3つ前後に絞り、真ん中(または一番売りたいプラン)を「おすすめ」として
+      視覚的に強調すると選択のハードルが下がる(松竹梅効果)。
+    - 価格そのものより「何ができるようになるか」を機能一覧で明示する。
+
+  プレースホルダー(n=1〜3、PLAN_2 が「おすすめ」枠):
+    {{PLAN_n_NAME}}       プラン名
+    {{PLAN_n_PRICE}}      価格表示(例: "¥980 / 月")
+    {{PLAN_n_DESC}}       1行説明
+    {{PLAN_n_FEATURES}}   機能一覧(<li>...</li> を並べたHTML文字列を渡す)
+    {{PLAN_n_CTA_TEXT}}   CTAボタン文言
+-->
+<section class="pricing" id="pricing">
+  <h2 class="section-title">料金プラン</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <h3>Free</h3>
+      <p class="price">¥0 / 月</p>
+      <p class="desc">まずは肩の力を抜いて試す</p>
+      <ul class="features"><li>タスク管理(3プロジェクトまで)</li><li>メンバー3人まで</li><li>メールサポート</li></ul>
+      <a class="btn btn-outline" href="#cta">毎日を軽くする</a>
+    </div>
+
+    <div class="pricing-card pricing-card-highlight">
+      <p class="badge">おすすめ</p>
+      <h3>Standard</h3>
+      <p class="price">¥980 / 月・人</p>
+      <p class="desc">多くのチームが安心を得たプラン</p>
+      <ul class="features"><li>プロジェクト数無制限</li><li>メンバー無制限</li><li>ガントチャート</li><li>チャットサポート</li></ul>
+      <a class="btn btn-primary" href="#cta">毎日を軽くする</a>
+    </div>
+
+    <div class="pricing-card">
+      <h3>Business</h3>
+      <p class="price">¥1,980 / 月・人</p>
+      <p class="desc">チーム全体を不安から解放</p>
+      <ul class="features"><li>Standardの全機能</li><li>権限管理</li><li>API連携</li><li>専任サポート</li></ul>
+      <a class="btn btn-outline" href="#cta">毎日を軽くする</a>
+    </div>
+  </div>
+</section>
+
+<!--
+  [テンプレート] cta(最終行動喚起)セクション サンプル
+
+  役割: LP最下部に配置する最後の後押し + フォーム。
+  CRO知見:
+    - フォームの入力項目は少ないほどCVRが高い傾向がある(Baymard Instituteの知見)。
+      このサンプルではメールアドレスのみを必須項目としている。
+    - ボタン文言は「送信する」ではなく行動後の利益を明示する
+      (例:「無料で始める」「資料を今すぐ受け取る」)。
+
+  プレースホルダー:
+    その不安、今日で終わりにしませんか      見出し(最後の後押し)
+    登録は1分。まずは無料でTaskFlowを試してみてください。       補足コピー
+    毎日を軽くする   送信ボタン文言(行動後の利益を明示)
+-->
+<section class="cta" id="cta">
+  <h2 class="cta-headline">その不安、今日で終わりにしませんか</h2>
+  <p class="cta-subcopy">登録は1分。まずは無料でTaskFlowを試してみてください。</p>
+
+  <!-- フェーズ1では送信先サーバーがないため action は "#"(ダミー)。
+       フェーズ2でイベント計測API/フォーム受付APIに接続する。 -->
+  <form class="cta-form" action="#" method="post">
+    <label class="visually-hidden" for="email">メールアドレス</label>
+    <input type="email" id="email" name="email" placeholder="メールアドレス" required>
+    <button type="submit" class="btn btn-primary">毎日を軽くする</button>
+  </form>
+</section>
+
+</body>
+</html>
