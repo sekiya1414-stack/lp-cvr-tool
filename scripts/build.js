@@ -73,6 +73,8 @@ const CSS_BASE = `
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 `;
 
+const GOATCOUNTER_SCRIPT = `<script data-goatcounter="https://rojiuracity.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>`;
+
 function renderPage({ title, description, sectionsHtml }) {
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -82,6 +84,7 @@ function renderPage({ title, description, sectionsHtml }) {
 <title>${title}</title>
 <meta name="description" content="${description}">
 <style>${CSS_BASE}</style>
+${GOATCOUNTER_SCRIPT}
 </head>
 <body>
 ${sectionsHtml.join("\n")}
