@@ -70,8 +70,38 @@ const CSS_BASE = `
   .cta-subcopy { color: var(--muted); margin-bottom: 28px; }
   .cta-form { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
   .cta-form input { padding: 14px; border-radius: 8px; border: 1px solid var(--border); min-width: 260px; }
+  .cta-error { color: #dc2626; margin-top: 16px; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 `;
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xrenovaz";
+
+const FORM_HANDLER_SCRIPT = `<script>
+(function () {
+  var form = document.querySelector(".cta-form");
+  if (!form) return;
+  var success = document.querySelector(".cta-success");
+  var error = document.querySelector(".cta-error");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (error) error.hidden = true;
+    fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { Accept: "application/json" },
+    }).then(function (res) {
+      if (res.ok) {
+        form.style.display = "none";
+        if (success) success.hidden = false;
+      } else if (error) {
+        error.hidden = false;
+      }
+    }).catch(function () {
+      if (error) error.hidden = false;
+    });
+  });
+})();
+</script>`;
 
 const GOATCOUNTER_SCRIPT = `<script data-goatcounter="https://rojiuracity.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>`;
 
@@ -88,6 +118,7 @@ ${GOATCOUNTER_SCRIPT}
 </head>
 <body>
 ${sectionsHtml.join("\n")}
+${FORM_HANDLER_SCRIPT}
 </body>
 </html>
 `;
@@ -259,7 +290,11 @@ function buildVariant(projectName, variantName, config) {
     fillPlaceholders(heroTemplate, config.hero),
     fillPlaceholders(socialProofTemplate, config.socialProof),
     fillPlaceholders(pricingTemplate, config.pricing),
-    fillPlaceholders(ctaTemplate, config.cta),
+    fillPlaceholders(ctaTemplate, {
+      ...config.cta,
+      FORM_ACTION: FORMSPREE_ENDPOINT,
+      VARIANT_NAME: variantName,
+    }),
   ];
 
   const html = renderPage({

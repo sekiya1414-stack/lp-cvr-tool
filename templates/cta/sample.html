@@ -17,11 +17,12 @@
   <h2 class="cta-headline">{{CTA_HEADLINE}}</h2>
   <p class="cta-subcopy">{{CTA_SUBCOPY}}</p>
 
-  <!-- フェーズ1では送信先サーバーがないため action は "#"(ダミー)。
-       フェーズ2でイベント計測API/フォーム受付APIに接続する。 -->
-  <form class="cta-form" action="#" method="post">
+  <form class="cta-form" action="{{FORM_ACTION}}" method="post">
     <label class="visually-hidden" for="email">メールアドレス</label>
     <input type="email" id="email" name="email" placeholder="メールアドレス" required>
+    <input type="hidden" name="variant" value="{{VARIANT_NAME}}">
     <button type="submit" class="btn btn-primary">{{CTA_BUTTON_TEXT}}</button>
   </form>
+  <p class="cta-success" hidden>送信ありがとうございます。担当より折り返しご連絡いたします。</p>
+  <p class="cta-error" hidden>送信に失敗しました。時間をおいて再度お試しください。</p>
 </section>
