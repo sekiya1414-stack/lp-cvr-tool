@@ -1,0 +1,50 @@
+{
+  "title": "TaskFlow | 導入企業1,000社超のタスク管理プラットフォーム",
+  "description": "国内シェアNo.1クラス、導入企業1,000社超のTaskFlow",
+  "hero": {
+    "HERO_HEADLINE": "導入企業1,000社超。選ばれ続けるタスク管理プラットフォーム。",
+    "HERO_SUBCOPY": "大手企業からスタートアップまで、業界を問わず導入実績多数。専門家監修のワークフロー設計。",
+    "HERO_CTA_TEXT": "資料を無料で受け取る",
+    "HERO_IMAGE_SRC": "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80",
+    "HERO_IMAGE_ALT": "TaskFlowのチーム利用イメージ(プレースホルダー)"
+  },
+  "socialProof": {
+    "SOCIAL_PROOF_STAT_NUMBER": "1,000社+",
+    "SOCIAL_PROOF_STAT_LABEL": "の導入実績、業務効率化アワード受賞",
+    "LOGO_1_NAME": "Sample Corp",
+    "LOGO_2_NAME": "Acme Inc.",
+    "LOGO_3_NAME": "Nova Works",
+    "LOGO_4_NAME": "Blue Field",
+    "TESTIMONIAL_1_TEXT": "業界標準になりつつあるツールだと実感しています。",
+    "TESTIMONIAL_1_NAME": "高橋 誠",
+    "TESTIMONIAL_1_ROLE": "上場企業 情報システム部長",
+    "TESTIMONIAL_2_TEXT": "第三者機関の業務効率化アワードを受賞していた点が導入の決め手でした。",
+    "TESTIMONIAL_2_NAME": "田中 久美子",
+    "TESTIMONIAL_2_ROLE": "コンサルティングファーム パートナー",
+    "TESTIMONIAL_3_TEXT": "専門家監修のテンプレートで、導入初日から運用に乗せられました。",
+    "TESTIMONIAL_3_NAME": "伊藤 誠一",
+    "TESTIMONIAL_3_ROLE": "製造業 DX推進責任者"
+  },
+  "pricing": {
+    "PLAN_1_NAME": "Free",
+    "PLAN_1_PRICE": "¥0 / 月",
+    "PLAN_1_DESC": "まずは実績を体験",
+    "PLAN_1_FEATURES": ["タスク管理(3プロジェクトまで)", "メンバー3人まで", "メールサポート"],
+    "PLAN_1_CTA_TEXT": "資料を無料で受け取る",
+    "PLAN_2_NAME": "Standard",
+    "PLAN_2_PRICE": "¥980 / 月・人",
+    "PLAN_2_DESC": "導入企業の多くが選択",
+    "PLAN_2_FEATURES": ["プロジェクト数無制限", "メンバー無制限", "ガントチャート", "チャットサポート"],
+    "PLAN_2_CTA_TEXT": "資料を無料で受け取る",
+    "PLAN_3_NAME": "Business",
+    "PLAN_3_PRICE": "¥1,980 / 月・人",
+    "PLAN_3_DESC": "大手企業導入実績多数",
+    "PLAN_3_FEATURES": ["Standardの全機能", "権限管理", "API連携", "専任サポート"],
+    "PLAN_3_CTA_TEXT": "資料を無料で受け取る"
+  },
+  "cta": {
+    "CTA_HEADLINE": "1,000社が選んだ理由を資料でご確認ください",
+    "CTA_SUBCOPY": "導入事例・活用ノウハウをまとめた資料を無料配布中。",
+    "CTA_BUTTON_TEXT": "資料を無料で受け取る"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "title": "TaskFlow | もう、タスクの抜け漏れに悩まない毎日へ",
+  "description": "チームの「あれ、誰がやるんだっけ」をなくすTaskFlow",
+  "hero": {
+    "HERO_HEADLINE": "「あれ、誰がやるんだっけ」をなくす。",
+    "HERO_SUBCOPY": "抜け漏れの不安、確認のための残業、そんな毎日をTaskFlowが変えます。",
+    "HERO_CTA_TEXT": "毎日を軽くする",
+    "HERO_IMAGE_SRC": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    "HERO_IMAGE_ALT": "安心した表情でチームで働くイメージ(プレースホルダー)"
+  },
+  "socialProof": {
+    "SOCIAL_PROOF_STAT_NUMBER": "1,000社+",
+    "SOCIAL_PROOF_STAT_LABEL": "のチームが、同じ悩みから解放されました",
+    "LOGO_1_NAME": "Sample Corp",
+    "LOGO_2_NAME": "Acme Inc.",
+    "LOGO_3_NAME": "Nova Works",
+    "LOGO_4_NAME": "Blue Field",
+    "TESTIMONIAL_1_TEXT": "確認のためだけの残業がなくなり、定時で帰れる日が増えました。",
+    "TESTIMONIAL_1_NAME": "中村 隆",
+    "TESTIMONIAL_1_ROLE": "営業チームリーダー",
+    "TESTIMONIAL_2_TEXT": "「言った言わない」がなくなって、チームの雰囲気まで良くなりました。",
+    "TESTIMONIAL_2_NAME": "小林 彩",
+    "TESTIMONIAL_2_ROLE": "バックオフィス担当",
+    "TESTIMONIAL_3_TEXT": "抜け漏れへの不安が減って、安心して仕事に集中できています。",
+    "TESTIMONIAL_3_NAME": "渡辺 学",
+    "TESTIMONIAL_3_ROLE": "新任マネージャー"
+  },
+  "pricing": {
+    "PLAN_1_NAME": "Free",
+    "PLAN_1_PRICE": "¥0 / 月",
+    "PLAN_1_DESC": "まずは肩の力を抜いて試す",
+    "PLAN_1_FEATURES": ["タスク管理(3プロジェクトまで)", "メンバー3人まで", "メールサポート"],
+    "PLAN_1_CTA_TEXT": "毎日を軽くする",
+    "PLAN_2_NAME": "Standard",
+    "PLAN_2_PRICE": "¥980 / 月・人",
+    "PLAN_2_DESC": "多くのチームが安心を得たプラン",
+    "PLAN_2_FEATURES": ["プロジェクト数無制限", "メンバー無制限", "ガントチャート", "チャットサポート"],
+    "PLAN_2_CTA_TEXT": "毎日を軽くする",
+    "PLAN_3_NAME": "Business",
+    "PLAN_3_PRICE": "¥1,980 / 月・人",
+    "PLAN_3_DESC": "チーム全体を不安から解放",
+    "PLAN_3_FEATURES": ["Standardの全機能", "権限管理", "API連携", "専任サポート"],
+    "PLAN_3_CTA_TEXT": "毎日を軽くする"
+  },
+  "cta": {
+    "CTA_HEADLINE": "その不安、今日で終わりにしませんか",
+    "CTA_SUBCOPY": "登録は1分。まずは無料でTaskFlowを試してみてください。",
+    "CTA_BUTTON_TEXT": "毎日を軽くする"
+  }
+}

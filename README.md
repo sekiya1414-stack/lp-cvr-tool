@@ -41,8 +41,16 @@ lp-cvr-tool/
 │   ├── copy-generation.md          # コピー生成プロンプトの叩き台
 │   ├── structure-generation.md     # 構造生成プロンプトの叩き台
 │   └── future-phase2-image-generation.md  # フェーズ2の画像生成機能メモ
+├── data/                          # プロジェクト × variantごとのコピー設定(JSON)
+│   └── project-a/
+│       ├── config.json              # 商材情報・ターゲット・訴求軸(生成の入力)
+│       ├── variant-1.json           # 生成されたコピー(build.jsの入力)
+│       ├── variant-2.json
+│       └── variant-3.json
 └── scripts/
-    └── build.js                   # テンプレート → HTML生成スクリプト
+    ├── build.js                   # data/ + templates/ → HTML生成スクリプト
+    ├── generate-copy.js           # `claude`コマンドでdata/配下のコピーを再生成
+    └── vps-cron-build.sh          # VPS上でcron定期実行する用のラッパー
 ```
 
 新しいプロジェクト(商材)を追加する場合は `lp/project-b/` のように
@@ -66,21 +74,46 @@ lp-cvr-tool/
 start lp/project-a/variant-1/index.html   # Windows
 ```
 
-`scripts/build.js` を実行すると、`templates/` 内のパーツ + variantごとのコピー設定から
-`lp/project-a/variant-*/index.html` を再生成できます(Node標準ライブラリのみで動作、
-npm install不要)。
+`scripts/build.js` を実行すると、`templates/` 内のパーツ + `data/project-a/*.json` の
+コピー設定から `lp/project-a/variant-*/index.html` を再生成できます(Node標準ライブラリ
+のみで動作、npm install不要)。
 
 ```bash
 node scripts/build.js
 ```
 
+## コピーのLLM定期再生成(VPS + cron)
+
+`data/project-a/config.json` の商材情報(ターゲット・訴求軸・裏付け事実)をもとに、
+`scripts/generate-copy.js` が `claude` コマンド(Claude Code CLIのヘッドレスモード)を
+呼び出して各variantのコピーを再生成し、`data/project-a/variant-*.json` を上書きします。
+Anthropic APIキーの個別管理は不要で、VPS上で認証済みのClaude Code CLIをそのまま使います。
+
+```bash
+node scripts/generate-copy.js project-a   # data/project-a/*.json を再生成
+node scripts/build.js                      # lp/ 配下のHTMLを再生成
+```
+
+24時間稼働のVPS上で `scripts/vps-cron-build.sh` をcron登録すると、
+「コピー再生成 → ビルド → 変更があればcommit & push」までを自動化できます。
+push後は既存の `deploy.yml`(GitHub Actions)がそのままGitHub Pagesへデプロイします。
+
+```
+# crontab -e に登録する例(毎朝6時)
+0 6 * * * /home/<user>/projects/lp-cvr-tool/scripts/vps-cron-build.sh >> /home/<user>/logs/lp-cvr-build.log 2>&1
+```
+
+- 前提: VPS上に `claude` コマンドがインストール・認証済みであること
+- 新しいvariantを増やす場合は `data/project-a/config.json` の `variants` にキーを追加し、
+  対応する `data/project-a/<variant>.json` の初期ファイル(空でも可、次回生成で上書きされる)
+  を用意する
+
 ## 今後のフェーズ(予定)
 
-### フェーズ2: バックエンド追加
+### フェーズ2: バックエンド追加(残り)
 - Vercel / Cloudflare Workers でのバックエンド追加
   - A/Bテストの振り分け(訪問者をバリアントに割り当て)
   - イベント計測API(閲覧・CTAクリック・コンバージョンの記録)
-  - Anthropic API経由でのコピー・構造生成(`prompts/` のプロンプトを実際に呼び出す)
   - 画像生成API(Stability AI / DALL-E)経由でのヒーロー画像自動生成
 - Supabase でのデータベース構築(計測データ・生成LP・勝ちパターンの永続化)
 
