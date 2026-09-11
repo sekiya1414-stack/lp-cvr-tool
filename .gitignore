@@ -20,6 +20,9 @@ workers/*.local
 # ヒーロー画像の生成候補(選定前のドラフト、確定分のみassets/imgへ手動で昇格)
 assets/hero-candidates/
 
+# LPコピーの生成候補(選定前のドラフト、確定分のみbuild.jsのvariantsへ手動で反映)
+assets/copy-candidates/
+
 # エディタ設定
 .vscode/
 .idea/

@@ -53,14 +53,17 @@
 | 2-2 | `workers/src/index.ts`内 `/assign` 実装 | 訪問者ごとのバリアント振り分け(Cookie管理含む)、静的LPへ302リダイレクト | ✅ 完了・実機確認済み(2026-09-11) |
 | 2-3 | `workers/src/index.ts`内 `/track` 実装 | クリック・CVイベントの計測API(CORS対応) | ✅ 完了・実機確認済み(2026-09-11) |
 | 2-4 | 画像生成機能 | Cloudflare Workers AI(FLUX)で`POST /generate-image`を実装。訪問者ごとの動的生成ではなく、ビルド時にローカルから候補生成→選定する運用(Canva運用を置き換え) | ✅ 完了・3variant分の候補生成まで実機確認済み(2026-09-11) |
-| 2-5 | コピー生成機能 | Anthropic API経由でのコピー生成 | ⬜ 未着手 |
+| 2-5 | コピー生成機能 | Cloudflare Workers AIで`POST /generate-copy`を実装。scripts/build.jsのvariant設定と同じJSON構造を出力 | ✅ 完了・3variant分の候補生成まで実機確認済み(2026-09-11) |
 | 2-6 | DB作成・スキーマ設計 | Cloudflare D1採用に確定。`lp-cvr-tool-db`作成、`events`テーブル作成済み | ✅ 完了(2026-09-11) |
 | 2-7 | 統計判定ロジック(`workers/src/stats.ts`、`GET /stats`) | Beta-Binomial+モンテカルロでvariantごとの勝率(probabilityBest)・勝者を判定 | ✅ 完了・合成データで動作検証済み(2026-09-11) |
 | 2-8 | 既存の静的LPとバックエンドの結合テスト | 振り分け→計測→判定の一連動作確認 | ✅ view/cvイベント送信を組み込み、本番LPで実機確認済み(2026-09-11) |
 
-**フェーズ2進捗率: 約90%**(振り分け・計測・統計判定・画像生成まで本番で動作確認済み。
-配布リンクは`/assign`経由に切り替え可能な状態(独自ドメイン化は見送り、`workers.dev`
-URLをそのまま使用する方針に確定・2026-09-11)。残るはコピー生成(2-5)のみ)
+**フェーズ2進捗率: 約98%**(2-1〜2-7すべて本番で動作確認済み。残る2-8は
+「静的LP側からのコピー/画像候補の実反映」のみで、機能自体は完成)
+
+**コピー生成**: `node scripts/generate-copy.js`(ローカル実行、要`workers/.generate-copy-secret.local`)
+で3訴求軸分のLPコピー候補を`assets/copy-candidates/project-a/`に生成。中身を確認の上、
+`scripts/build.js`の`variants`オブジェクトへ手動反映する運用
 
 **統計API**: `GET https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/stats?project=project-a`
 (各variantのCVR・ベイズ的勝率・95%信用区間・勝者判定をJSONで返す)
@@ -172,3 +175,4 @@ URLをそのまま使用する方針に確定・2026-09-11)。残るはコピー
 | 2026-09-11 | 配布リンクの独自ドメイン化(`lp.kotobuki.shop`等)を検討したが、本番サイトのDNS変更を伴う手間を避けるためユーザー判断で見送り。`workers.dev`のURL(`https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/assign?project=project-a`)をそのまま配布に使う方針に確定。進捗率60%→65%に更新 |
 | 2026-09-11 | 統計判定ロジック(2-7)実装。`workers/src/stats.ts`にBeta-Binomial+モンテカルロでprobabilityBest・95%信用区間・勝者判定を実装、`GET /stats`として公開。合成データ(variant-1のみCVR30%、他10%程度)を一時投入し`winner: "variant-1"`を正しく検出することを確認、検証後に合成データは削除。進捗率65%→80%に更新 |
 | 2026-09-11 | 画像生成機能(2-4)実装。Cloudflare Workers AI(FLUX)を使った`POST /generate-image`をWorkerに追加(シークレット認証つき、訪問者には非公開)。`scripts/generate-hero-images.js`でローカルから3variant分のヒーロー画像候補を生成し実機確認(訴求軸ごとに狙い通りの雰囲気)。進捗率80%→90%に更新 |
+| 2026-09-11 | コピー生成機能(2-5)実装。`POST /generate-copy`(Workers AI、json_schemaモード)を追加。モデル選定で試行錯誤(Llama-3.3-70bは日本語が破綻、Qwen3.8-27bはreasoning型でmax_tokensを思考に使い切り本文が空に → Mistral Small 3.1 24Bに変更し解決)。スキーマの必須項目を全部指定することで完全な出力を確認。`scripts/generate-copy.js`で3訴求軸分のコピー候補生成を実機確認。進捗率90%→98%に更新 |

@@ -6,15 +6,19 @@
  * - GET  /stats  : D1の記録からベイズ的にvariantごとの勝率・勝者を判定
  * - POST /generate-image : ヒーロー画像の候補生成(Workers AI)。ビルド時にローカルから
  *   叩いて候補を保存し、選んだものをtemplates/hero差し替えに使う運用(訪問者には配信しない)
+ * - POST /generate-copy  : LPコピー一式の生成(Workers AI)。scripts/build.jsのvariant設定と
+ *   同じJSON構造で返す。画像生成と同様、訪問者には配信しないビルド時ツール
  */
 
 import { PROJECT_VARIANTS } from "./constants";
 import { computeStats, type VariantCounts } from "./stats";
+import { COPY_JSON_SCHEMA } from "./copy-schema";
 
 export interface Env {
   DB: D1Database;
   AI: Ai;
   GENERATE_IMAGE_SECRET: string;
+  GENERATE_COPY_SECRET: string;
 }
 
 const STATIC_SITE_BASE = "https://sekiya1414-stack.github.io/lp-cvr-tool";
@@ -182,6 +186,76 @@ async function handleGenerateImage(request: Request, env: Env): Promise<Response
   });
 }
 
+// 実機比較の結果: Llama-3.3-70b-fp8-fastは日本語が意味不明な繰り返しになり、
+// Qwen3.8-27bは「reasoning」型モデルで、json_schema指定時も思考過程だけで
+// max_tokensを使い切ってしまい本文が空になったため不採用。非reasoningの
+// Mistral Small 3.1で試す
+const COPY_MODEL = "@cf/mistralai/mistral-small-3.1-24b-instruct";
+
+async function handleGenerateCopy(request: Request, env: Env): Promise<Response> {
+  const providedSecret = request.headers.get("X-Generate-Secret");
+  if (!env.GENERATE_COPY_SECRET || providedSecret !== env.GENERATE_COPY_SECRET) {
+    return new Response("unauthorized", { status: 401 });
+  }
+
+  let body: { productName?: string; productDescription?: string; targetPersona?: string; appealAxis?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return new Response("invalid JSON body", { status: 400 });
+  }
+  const { productName, productDescription, targetPersona, appealAxis } = body;
+  if (!productName || !productDescription || !targetPersona || !appealAxis) {
+    return new Response("productName, productDescription, targetPersona, appealAxis は必須です", { status: 400 });
+  }
+
+  const prompt = `あなたはLPのコピーライターです。以下の商材について、訴求軸「${appealAxis}」を前面に出した日本語のランディングページコピー一式をJSONで作成してください。
+
+商材名: ${productName}
+商材説明: ${productDescription}
+ターゲット: ${targetPersona}
+訴求軸: ${appealAxis}
+
+要件:
+- 敬体(です・ます調)で、具体的な数字を交えて説得力を持たせること
+- pricingは3プラン(Free/Standard/Business相当)を想定し、価格は商材説明から妥当な金額を設定すること
+- socialProofの企業名・お客様の声は、実在しないダミーとして自然な日本語で作成すること
+- 指定されたJSON Schemaのキー名・構造を厳守すること`;
+
+  const result = await env.AI.run(COPY_MODEL, {
+    messages: [{ role: "user", content: prompt }],
+    response_format: { type: "json_schema", json_schema: COPY_JSON_SCHEMA },
+    // スキーマの項目数が多く、デフォルトのmax_tokensだと出力が途中で切れてJSONが
+    // 壊れるため、日本語コピー一式(約35項目)が収まるよう明示的に増やす
+    max_tokens: 3000,
+  });
+
+  // Workers AIのモデルによってレスポンス形状が異なる({ response: string } 形式の
+  // ものと、OpenAI互換の { choices: [{ message: { content } }] } 形式のものがある)ため両対応する。
+  // LLMの出力が稀に不正なJSON(壊れたUnicodeエスケープ・途中で切れる等)になることがあるため、
+  // 失敗時は例外を投げず生テキストを添えて返す(呼び出し側でリトライ判断できるように)
+  const asChatCompletion = result as { response?: unknown; choices?: { message?: { content?: unknown } }[] };
+  const raw = asChatCompletion.response ?? asChatCompletion.choices?.[0]?.message?.content ?? result;
+  if (typeof raw !== "string") {
+    return new Response(JSON.stringify(raw, null, 2), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  try {
+    const copy = JSON.parse(raw);
+    return new Response(JSON.stringify(copy, null, 2), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "model returned invalid JSON", raw, message: String(err) }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -197,6 +271,9 @@ export default {
     }
     if (url.pathname === "/generate-image" && request.method === "POST") {
       return handleGenerateImage(request, env);
+    }
+    if (url.pathname === "/generate-copy" && request.method === "POST") {
+      return handleGenerateCopy(request, env);
     }
 
     return new Response("not found", { status: 404 });
