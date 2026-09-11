@@ -52,18 +52,22 @@
 | 2-1 | Cloudflare Workersプロジェクトのセットアップ | `workers/`にwrangler.toml・package.json新設 | ✅ 完了(2026-09-11) |
 | 2-2 | `workers/src/index.ts`内 `/assign` 実装 | 訪問者ごとのバリアント振り分け(Cookie管理含む)、静的LPへ302リダイレクト | ✅ 完了・実機確認済み(2026-09-11) |
 | 2-3 | `workers/src/index.ts`内 `/track` 実装 | クリック・CVイベントの計測API(CORS対応) | ✅ 完了・実機確認済み(2026-09-11) |
-| 2-4 | 画像生成機能 | Stability AI/DALL-E等での画像生成(Canva運用と並行 or 置き換え検討) | ⬜ 未着手 |
+| 2-4 | 画像生成機能 | Cloudflare Workers AI(FLUX)で`POST /generate-image`を実装。訪問者ごとの動的生成ではなく、ビルド時にローカルから候補生成→選定する運用(Canva運用を置き換え) | ✅ 完了・3variant分の候補生成まで実機確認済み(2026-09-11) |
 | 2-5 | コピー生成機能 | Anthropic API経由でのコピー生成 | ⬜ 未着手 |
 | 2-6 | DB作成・スキーマ設計 | Cloudflare D1採用に確定。`lp-cvr-tool-db`作成、`events`テーブル作成済み | ✅ 完了(2026-09-11) |
 | 2-7 | 統計判定ロジック(`workers/src/stats.ts`、`GET /stats`) | Beta-Binomial+モンテカルロでvariantごとの勝率(probabilityBest)・勝者を判定 | ✅ 完了・合成データで動作検証済み(2026-09-11) |
 | 2-8 | 既存の静的LPとバックエンドの結合テスト | 振り分け→計測→判定の一連動作確認 | ✅ view/cvイベント送信を組み込み、本番LPで実機確認済み(2026-09-11) |
 
-**フェーズ2進捗率: 約80%**(振り分け・計測・統計判定まで本番で動作確認済み。
+**フェーズ2進捗率: 約90%**(振り分け・計測・統計判定・画像生成まで本番で動作確認済み。
 配布リンクは`/assign`経由に切り替え可能な状態(独自ドメイン化は見送り、`workers.dev`
-URLをそのまま使用する方針に確定・2026-09-11)。残るは画像/コピー生成(2-4/2-5))
+URLをそのまま使用する方針に確定・2026-09-11)。残るはコピー生成(2-5)のみ)
 
 **統計API**: `GET https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/stats?project=project-a`
 (各variantのCVR・ベイズ的勝率・95%信用区間・勝者判定をJSONで返す)
+
+**画像生成**: `node scripts/generate-hero-images.js`(ローカル実行、要`workers/.generate-image-secret.local`)
+で3variant分のヒーロー画像候補を`assets/hero-candidates/project-a/`に生成。選定後は
+`assets/img/`へ手動で昇格し`scripts/build.js`の`HERO_IMAGE_SRC`を差し替える運用
 
 **公開URL(Workers)**: https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev
 
@@ -167,3 +171,4 @@ URLをそのまま使用する方針に確定・2026-09-11)。残るは画像/�
 | 2026-09-11 | `scripts/build.js`にトラッキングスクリプトを組み込み(view自動送信・CTA送信成功時にcv送信)、3variant再生成。コミット・push→GitHub Actions自動デプロイ後、本番LP(variant-2)をブラウザで開きD1にviewイベントが記録されることを実機確認。進捗率45%→60%に更新 |
 | 2026-09-11 | 配布リンクの独自ドメイン化(`lp.kotobuki.shop`等)を検討したが、本番サイトのDNS変更を伴う手間を避けるためユーザー判断で見送り。`workers.dev`のURL(`https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/assign?project=project-a`)をそのまま配布に使う方針に確定。進捗率60%→65%に更新 |
 | 2026-09-11 | 統計判定ロジック(2-7)実装。`workers/src/stats.ts`にBeta-Binomial+モンテカルロでprobabilityBest・95%信用区間・勝者判定を実装、`GET /stats`として公開。合成データ(variant-1のみCVR30%、他10%程度)を一時投入し`winner: "variant-1"`を正しく検出することを確認、検証後に合成データは削除。進捗率65%→80%に更新 |
+| 2026-09-11 | 画像生成機能(2-4)実装。Cloudflare Workers AI(FLUX)を使った`POST /generate-image`をWorkerに追加(シークレット認証つき、訪問者には非公開)。`scripts/generate-hero-images.js`でローカルから3variant分のヒーロー画像候補を生成し実機確認(訴求軸ごとに狙い通りの雰囲気)。進捗率80%→90%に更新 |

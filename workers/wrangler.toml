@@ -6,3 +6,6 @@ compatibility_date = "2026-09-01"
 binding = "DB"
 database_name = "lp-cvr-tool-db"
 database_id = "e7c986eb-700f-4118-bb0e-22502d683f0f"
+
+[ai]
+binding = "AI"

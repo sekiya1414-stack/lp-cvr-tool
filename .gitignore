@@ -15,6 +15,10 @@ dist/
 
 # Cloudflare Workers(wranglerのローカルキャッシュ・アカウント情報)
 workers/.wrangler/
+workers/*.local
+
+# ヒーロー画像の生成候補(選定前のドラフト、確定分のみassets/imgへ手動で昇格)
+assets/hero-candidates/
 
 # エディタ設定
 .vscode/

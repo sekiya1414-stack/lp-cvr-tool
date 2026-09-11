@@ -4,6 +4,8 @@
  * - GET  /assign : 訪問者にvariantを振り分け、Cookie保存の上で静的LPへ302リダイレクト
  * - POST /track  : クリック/CVイベントをD1に記録
  * - GET  /stats  : D1の記録からベイズ的にvariantごとの勝率・勝者を判定
+ * - POST /generate-image : ヒーロー画像の候補生成(Workers AI)。ビルド時にローカルから
+ *   叩いて候補を保存し、選んだものをtemplates/hero差し替えに使う運用(訪問者には配信しない)
  */
 
 import { PROJECT_VARIANTS } from "./constants";
@@ -11,6 +13,8 @@ import { computeStats, type VariantCounts } from "./stats";
 
 export interface Env {
   DB: D1Database;
+  AI: Ai;
+  GENERATE_IMAGE_SECRET: string;
 }
 
 const STATIC_SITE_BASE = "https://sekiya1414-stack.github.io/lp-cvr-tool";
@@ -146,6 +150,38 @@ async function handleStats(request: Request, env: Env): Promise<Response> {
   });
 }
 
+const IMAGE_MODEL = "@cf/black-forest-labs/flux-1-schnell";
+
+async function handleGenerateImage(request: Request, env: Env): Promise<Response> {
+  const providedSecret = request.headers.get("X-Generate-Secret");
+  if (!env.GENERATE_IMAGE_SECRET || providedSecret !== env.GENERATE_IMAGE_SECRET) {
+    return new Response("unauthorized", { status: 401 });
+  }
+
+  let body: { prompt?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return new Response("invalid JSON body", { status: 400 });
+  }
+  if (!body.prompt) {
+    return new Response("prompt は必須です", { status: 400 });
+  }
+
+  const result = await env.AI.run(IMAGE_MODEL, { prompt: body.prompt });
+
+  // flux-1-schnellはbase64エンコードされた画像を{ image: string }で返す。
+  // ドキュメント上はPNG表記だが実機確認では実際のバイト列はJPEGだったため、
+  // Content-Typeは実バイト列に合わせてimage/jpegとする
+  const base64 = (result as { image: string }).image;
+  const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+
+  return new Response(binary, {
+    status: 200,
+    headers: { "Content-Type": "image/jpeg" },
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -158,6 +194,9 @@ export default {
     }
     if (url.pathname === "/stats" && request.method === "GET") {
       return handleStats(request, env);
+    }
+    if (url.pathname === "/generate-image" && request.method === "POST") {
+      return handleGenerateImage(request, env);
     }
 
     return new Response("not found", { status: 404 });
