@@ -75,6 +75,7 @@ const CSS_BASE = `
 `;
 
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/xrenovaz";
+const TRACK_ENDPOINT = "https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/track";
 
 const FORM_HANDLER_SCRIPT = `<script>
 (function () {
@@ -93,6 +94,7 @@ const FORM_HANDLER_SCRIPT = `<script>
       if (res.ok) {
         form.style.display = "none";
         if (success) success.hidden = false;
+        if (window.sendLpEvent) window.sendLpEvent("cv");
       } else if (error) {
         error.hidden = false;
       }
@@ -105,7 +107,28 @@ const FORM_HANDLER_SCRIPT = `<script>
 
 const GOATCOUNTER_SCRIPT = `<script data-goatcounter="https://rojiuracity.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>`;
 
-function renderPage({ title, description, sectionsHtml }) {
+// lp-cvr-tool Workers(/track)へのイベント送信。projectName/variantNameはビルド時に埋め込む。
+// ページ読み込み時に自動でviewイベントを送るほか、window.sendLpEventをCTA送信時のcv計測に使う。
+function buildTrackingScript(projectName, variantName) {
+  return `<script>
+(function () {
+  var TRACK_ENDPOINT = ${JSON.stringify(TRACK_ENDPOINT)};
+  var PROJECT = ${JSON.stringify(projectName)};
+  var VARIANT = ${JSON.stringify(variantName)};
+  window.sendLpEvent = function (eventType, meta) {
+    fetch(TRACK_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({ project: PROJECT, variant: VARIANT, eventType: eventType, meta: meta }),
+    }).catch(function () {});
+  };
+  window.sendLpEvent("view");
+})();
+</script>`;
+}
+
+function renderPage({ title, description, sectionsHtml, trackingScript }) {
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -115,6 +138,7 @@ function renderPage({ title, description, sectionsHtml }) {
 <meta name="description" content="${description}">
 <style>${CSS_BASE}</style>
 ${GOATCOUNTER_SCRIPT}
+${trackingScript}
 </head>
 <body>
 ${sectionsHtml.join("\n")}
@@ -301,6 +325,7 @@ function buildVariant(projectName, variantName, config) {
     title: config.title,
     description: config.description,
     sectionsHtml,
+    trackingScript: buildTrackingScript(projectName, variantName),
   });
 
   const outDir = path.join(LP_DIR, projectName, variantName);

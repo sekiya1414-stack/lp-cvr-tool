@@ -13,6 +13,9 @@ Thumbs.db
 # ビルド出力
 dist/
 
+# Cloudflare Workers(wranglerのローカルキャッシュ・アカウント情報)
+workers/.wrangler/
+
 # エディタ設定
 .vscode/
 .idea/

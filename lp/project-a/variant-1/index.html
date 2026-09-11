@@ -49,6 +49,22 @@
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>
 <script data-goatcounter="https://rojiuracity.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+(function () {
+  var TRACK_ENDPOINT = "https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/track";
+  var PROJECT = "project-a";
+  var VARIANT = "variant-1";
+  window.sendLpEvent = function (eventType, meta) {
+    fetch(TRACK_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({ project: PROJECT, variant: VARIANT, eventType: eventType, meta: meta }),
+    }).catch(function () {});
+  };
+  window.sendLpEvent("view");
+})();
+</script>
 </head>
 <body>
 <!--
@@ -221,6 +237,7 @@
       if (res.ok) {
         form.style.display = "none";
         if (success) success.hidden = false;
+        if (window.sendLpEvent) window.sendLpEvent("cv");
       } else if (error) {
         error.hidden = false;
       }
