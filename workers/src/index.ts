@@ -2,18 +2,16 @@
  * lp-cvr-tool フェーズ2 バックエンド(Cloudflare Workers)
  *
  * - GET  /assign : 訪問者にvariantを振り分け、Cookie保存の上で静的LPへ302リダイレクト
- * - POST /track  : クリック/CVイベントを記録(D1未接続の間はログ出力のみ)
+ * - POST /track  : クリック/CVイベントをD1に記録
+ * - GET  /stats  : D1の記録からベイズ的にvariantごとの勝率・勝者を判定
  */
 
-export interface Env {
-  // wrangler.toml の [[d1_databases]] で bindingName を "DB" にすると使えるようになる。
-  // D1採用が確定するまでは未バインドのため、コード側はDBの有無を都度チェックする。
-  DB?: D1Database;
-}
+import { PROJECT_VARIANTS } from "./constants";
+import { computeStats, type VariantCounts } from "./stats";
 
-const PROJECT_VARIANTS: Record<string, string[]> = {
-  "project-a": ["variant-1", "variant-2", "variant-3"],
-};
+export interface Env {
+  DB: D1Database;
+}
 
 const STATIC_SITE_BASE = "https://sekiya1414-stack.github.io/lp-cvr-tool";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 90; // 90日、勝ちパターン検証中は同一variantを見続けてもらう
@@ -39,15 +37,10 @@ function pickVariant(variants: string[]): string {
   return variants[Math.floor(Math.random() * variants.length)];
 }
 
-// D1未バインドの間はconsole出力のみ、接続後はeventsテーブルへ書き込む(スキーマは別途 analysis/schema.sql で定義予定)
 async function logEvent(
   env: Env,
   fields: { project: string; variant: string; eventType: string; meta?: string }
 ): Promise<void> {
-  if (!env.DB) {
-    console.log("[track-event:no-db]", JSON.stringify(fields));
-    return;
-  }
   await env.DB.prepare(
     "INSERT INTO events (project, variant, event_type, meta, created_at) VALUES (?, ?, ?, ?, ?)"
   )
@@ -124,6 +117,35 @@ async function handleTrack(request: Request, env: Env): Promise<Response> {
   });
 }
 
+async function handleStats(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const project = url.searchParams.get("project") ?? "project-a";
+  const variants = PROJECT_VARIANTS[project];
+
+  if (!variants) {
+    return new Response(`unknown project: ${project}`, { status: 404 });
+  }
+
+  const { results } = await env.DB.prepare(
+    "SELECT variant, event_type, COUNT(*) as c FROM events WHERE project = ? GROUP BY variant, event_type"
+  )
+    .bind(project)
+    .all<{ variant: string; event_type: string; c: number }>();
+
+  const counts: VariantCounts[] = variants.map((variant) => {
+    const views = results.find((r) => r.variant === variant && r.event_type === "view")?.c ?? 0;
+    const cv = results.find((r) => r.variant === variant && r.event_type === "cv")?.c ?? 0;
+    return { variant, views, cv };
+  });
+
+  const stats = computeStats(counts);
+
+  return new Response(JSON.stringify({ project, ...stats }, null, 2), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -133,6 +155,9 @@ export default {
     }
     if (url.pathname === "/track" && (request.method === "POST" || request.method === "OPTIONS")) {
       return handleTrack(request, env);
+    }
+    if (url.pathname === "/stats" && request.method === "GET") {
+      return handleStats(request, env);
     }
 
     return new Response("not found", { status: 404 });

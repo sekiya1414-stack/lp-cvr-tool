@@ -55,11 +55,15 @@
 | 2-4 | 画像生成機能 | Stability AI/DALL-E等での画像生成(Canva運用と並行 or 置き換え検討) | ⬜ 未着手 |
 | 2-5 | コピー生成機能 | Anthropic API経由でのコピー生成 | ⬜ 未着手 |
 | 2-6 | DB作成・スキーマ設計 | Cloudflare D1採用に確定。`lp-cvr-tool-db`作成、`events`テーブル作成済み | ✅ 完了(2026-09-11) |
-| 2-7 | 統計判定ロジック(`lib/stats.ts`) | ベイズ的逐次検定などによる有意差判定 | ⬜ 未着手 |
-| 2-8 | 既存の静的LPとバックエンドの結合テスト | 振り分け→計測→判定の一連動作確認 | 🔄 一部完了(`/assign`・`/track`単体の実機確認済み。静的LP側からの`/track`呼び出し組み込みは未実施) |
+| 2-7 | 統計判定ロジック(`workers/src/stats.ts`、`GET /stats`) | Beta-Binomial+モンテカルロでvariantごとの勝率(probabilityBest)・勝者を判定 | ✅ 完了・合成データで動作検証済み(2026-09-11) |
+| 2-8 | 既存の静的LPとバックエンドの結合テスト | 振り分け→計測→判定の一連動作確認 | ✅ view/cvイベント送信を組み込み、本番LPで実機確認済み(2026-09-11) |
 
-**フェーズ2進捗率: 約45%**(コアAPI(振り分け・計測)は本番デプロイ・実機確認まで完了。
-残るは静的LP側への計測コード組み込み、統計判定ロジック、画像/コピー生成)
+**フェーズ2進捗率: 約80%**(振り分け・計測・統計判定まで本番で動作確認済み。
+配布リンクは`/assign`経由に切り替え可能な状態(独自ドメイン化は見送り、`workers.dev`
+URLをそのまま使用する方針に確定・2026-09-11)。残るは画像/コピー生成(2-4/2-5))
+
+**統計API**: `GET https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/stats?project=project-a`
+(各variantのCVR・ベイズ的勝率・95%信用区間・勝者判定をJSONで返す)
 
 **公開URL(Workers)**: https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev
 
@@ -160,3 +164,6 @@
 | 2026-08-06 | `.claude/docs/note.md`との突き合わせにより修正。1-7のvariant-2目視確認を完了に更新、1-12(本番稼働最終検証)・1-13(X投稿による初回配布)を追加、フェーズ1進捗率を97%に更新、次のステップに配布フォローアップ2件を追加 |
 | 2026-09-11 | フェーズ2着手。実行環境をCloudflare Workersに確定(コスト比較の結果)、DBはSupabase→D1へ置き換え検討中。`workers/`一式を新設し2-1〜2-3を実装・ビルド検証まで完了、進捗率0%→20%に更新 |
 | 2026-09-11 | DBをD1に確定。Cloudflareアカウント新規作成・wrangler login・D1データベース作成(`lp-cvr-tool-db`)・スキーマ適用・`wrangler deploy`まで完了し、`/assign`・`/track`を実機スモークテストで確認。進捗率20%→45%に更新 |
+| 2026-09-11 | `scripts/build.js`にトラッキングスクリプトを組み込み(view自動送信・CTA送信成功時にcv送信)、3variant再生成。コミット・push→GitHub Actions自動デプロイ後、本番LP(variant-2)をブラウザで開きD1にviewイベントが記録されることを実機確認。進捗率45%→60%に更新 |
+| 2026-09-11 | 配布リンクの独自ドメイン化(`lp.kotobuki.shop`等)を検討したが、本番サイトのDNS変更を伴う手間を避けるためユーザー判断で見送り。`workers.dev`のURL(`https://lp-cvr-tool.lp-cvr-tool-workers.workers.dev/assign?project=project-a`)をそのまま配布に使う方針に確定。進捗率60%→65%に更新 |
+| 2026-09-11 | 統計判定ロジック(2-7)実装。`workers/src/stats.ts`にBeta-Binomial+モンテカルロでprobabilityBest・95%信用区間・勝者判定を実装、`GET /stats`として公開。合成データ(variant-1のみCVR30%、他10%程度)を一時投入し`winner: "variant-1"`を正しく検出することを確認、検証後に合成データは削除。進捗率65%→80%に更新 |
